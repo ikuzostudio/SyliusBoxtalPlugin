@@ -1,0 +1,86 @@
+services:
+  _defaults:
+    autowire: true
+
+  ikuzo.boxtal.client:
+    class: Ikuzo\SyliusBoxtalPlugin\Boxtal\Client
+    arguments:
+      - '%env(BOXTAL_EMAIL)%'
+      - '%env(BOXTAL_PASSWORD)%'
+      - '%env(BOXTAL_TESTMODE)%'
+      - '@bitbag.repository.shipping_gateway'
+      - '@sylius.zone_matcher'
+      - '@sylius.factory.shipping_method'
+      - '@sylius.repository.shipping_method'
+      - '@doctrine.orm.entity_manager'
+      - '@sylius.repository.tax_category'
+      - '@ikuzo.boxtal.service.pickup_point'
+
+  ikuzo.boxtal.type.boxtal_shipping_gateway:
+    class: Ikuzo\SyliusBoxtalPlugin\Type\BoxtalShippingGatewayType
+    tags:
+      - { name: bitbag.shipping_gateway_configuration_type, type: "boxtal", label: "Boxtal" }
+
+  ikuzo.boxtal.type.boxtal_shipping_gateway_extension:
+    class: Ikuzo\SyliusBoxtalPlugin\Type\BoxtalShippingGatewayTypeExtension
+    arguments:
+      - '@ikuzo.boxtal.client'
+      - '@sylius.repository.tax_category'
+    tags:
+      - { name: form.type_extension }
+
+  ikuzo.boxtal.type.boxtal_shipping_method_choice_extension:
+    class: Ikuzo\SyliusBoxtalPlugin\Type\ShippingMethodChoiceTypeExtension
+    arguments:
+      - '@setono_sylius_pickup_point.registry.provider'
+      - '@router'
+      - '@sylius.context.cart.composite'
+      - '@security.csrf.token_manager'
+    tags:
+      - { name: form.type_extension, extended_type: Sylius\Bundle\ShippingBundle\Form\Type\ShippingMethodChoiceType, priority: 20 }
+
+  ikuzo.boxtal.shipping.calculator.boxtal:
+    class: Ikuzo\SyliusBoxtalPlugin\Shipping\Calculator\BoxtalCalculator
+    arguments: 
+      - '@ikuzo.boxtal.client'
+    tags:
+      - { name: sylius.shipping_calculator, calculator: boxtal, label: "Boxtal" }
+
+  ikuzo.boxtal.provider.boxtal_pickup_point:
+    class: Ikuzo\SyliusBoxtalPlugin\Provider\BoxtalPickupPointProvider
+    arguments:
+      - '@setono_sylius_pickup_point.factory.pickup_point'
+      - '@setono_sylius_pickup_point.repository.pickup_point'
+      - '@request_stack'
+      - '@sylius.repository.shipping_method'
+      - '@ikuzo.boxtal.client'
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: setono_sylius_pickup_point.provider, code: boxtal, label: Boxtal }
+
+  ikuzo.boxtal.service.pickup_point:
+    class: Ikuzo\SyliusBoxtalPlugin\Service\PickupPointService
+    arguments:
+      - '@setono_sylius_pickup_point.repository.pickup_point'
+      - '@setono_sylius_pickup_point.form.type.data_transformer.pickup_point_to_identifier'
+
+  ikuzo.boxtal.event_listener.boxtal_shipping_export:
+    class: Ikuzo\SyliusBoxtalPlugin\EventListener\BoxtalShippingExportEventListener
+    arguments:
+      - '@session.flash_bag'
+      - '@filesystem'
+      - '@bitbag.manager.shipping_export'
+      - '%bitbag.shipping_labels_path%'
+      - '@ikuzo.boxtal.client'
+    tags:
+      - { name: kernel.event_listener, event: 'bitbag.shipping_export.export_shipment', method: exportShipment }
+
+
+  sylius.shipping_methods_resolver:
+    class: Ikuzo\SyliusBoxtalPlugin\Shipping\Resolver\ShippingMethodsResolver
+    arguments:
+      - '@sylius.repository.shipping_method'
+      - '@sylius.shipping_method_eligibility_checker'
+      - '@ikuzo.boxtal.client'
+    tags:
+      - { name: sylius.shipping_methods_resolver, type: default, label: Default }

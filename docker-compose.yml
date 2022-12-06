@@ -1,0 +1,12 @@
+services:
+    mysql:
+        image: mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - ${MYSQL_PORT:-3306}:3306
+
+    adminer:
+        image: adminer
+        ports:
+            - 8001:8080

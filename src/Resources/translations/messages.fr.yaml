@@ -1,0 +1,8 @@
+ikuzo:
+  boxtal:
+    email: Adresse email
+    password: Mot de passe
+    environment: Environnement
+    content_type: Type de produits expédiés
+    services: Services activés
+    default_tax_category: Catégorie de taxe par défaut

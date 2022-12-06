@@ -1,0 +1,6 @@
+bitbag_shipping_export_plugin:
+  resource: "@BitBagSyliusShippingExportPlugin/Resources/config/routing.yml"
+  prefix: /admin
+
+setono_sylius_pickup_point_plugin:
+    resource: "@SetonoSyliusPickupPointPlugin/Resources/config/routing.yaml"

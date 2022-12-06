@@ -1,0 +1,23 @@
+{% set pickupPointId = shipment.pickupPointId %}
+
+{% if pickupPointId %}
+    <label class="setono-sylius-pickup-point-label">
+        {% set pickupPoint = pickupPointService.resolvePickupPointWithId(pickupPointId) %}
+        
+        {% if pickupPoint %}
+            {{ pickupPoint.name }} <br>
+            {{ pickupPoint.address }} <br>
+            {{ pickupPoint.zipCode }} {{ pickupPoint.city }}
+        {% endif %}
+    </label>
+{% endif %}
+
+
+{# {% if pickupPointId %}
+    <label class="setono-sylius-pickup-point-label"
+           data-pickup-point-id="{{ pickupPointId }}"
+           data-url="{{ path('setono_sylius_pickup_point_shop_ajax_pickup_point_by_id', { 'pickupPointId': pickupPointId }) }}"
+           style="display: none;">
+        {{ 'setono_sylius_pickup_point.ui.shipment_to'|trans }}
+    </label>
+{% endif %} #}

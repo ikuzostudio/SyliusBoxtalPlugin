@@ -1,0 +1,4 @@
+ikuzo_sylius_boxtal:
+  email: '%env(string:BOXTAL_EMAIL)%'
+  password: '%env(string:BOXTAL_PASSWORD)%'
+  testmode: '%env(bool:BOXTAL_TESTMODE)%'
