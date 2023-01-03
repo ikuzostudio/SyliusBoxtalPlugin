@@ -190,7 +190,7 @@ class Client implements ClientInterface
             'colis_1.largeur' => 10,
             'colis_1.hauteur' => 5,
             'colis.valeur' => round($order->getTotal() / 100, 2), 
-            'colis.description'	=> sprintf('Commande #%s - Expédition #%s', 
+            'colis.description' => sprintf('Commande #%s - Expédition #%s', 
                 $order->getNumber(),
                 $shipment->getId()
             ),
@@ -255,10 +255,9 @@ class Client implements ClientInterface
 
     private function insertShippingMethods(array $offers, ShippingSubjectInterface $subject): array
     {
-        $zone = $this->zoneMatcher->match($subject->getOrder()->getShippingAddress());
+        $zone = $this->zoneMatcher->match($subject->getOrder()->getShippingAddress(), 'shipping');
         $gateway = $this->findGateway();
         $shippingMethods = [];
-
         if ($zone instanceof ZoneInterface) {
             foreach ($offers as $offer) {
                 $shippingMethodCode = sprintf('BOXTAL_%s_%s_%s',
@@ -268,13 +267,12 @@ class Client implements ClientInterface
                 );
 
                 $shippingMethod = $this->shippingMethodRepository->findOneByCode($shippingMethodCode);
-
                 if ($shippingMethod === null) {
                     if (!in_array($offer['operator']['code'].'_'.$offer['service']['code'], $gateway->getConfigValue('enabledServices'))) {
                         continue;
                     }
-
                     $shippingMethod = $this->shippingMethodFactory->createNew();
+                    $shippingMethod->setCurrentLocale('fr_FR');
                     $shippingMethod->setCode($shippingMethodCode);
                     $shippingMethod->addChannel($subject->getOrder()->getChannel());
                     $shippingMethod->setEnabled(true);
