@@ -16,6 +16,7 @@ use Sylius\Component\Addressing\Model\AddressInterface;
 use Sylius\Component\Core\Model\ShippingMethodInterface;
 use BitBag\SyliusShippingExportPlugin\Entity\ShippingExportInterface;
 use Ikuzo\SyliusBoxtalPlugin\Service\PickupPointService;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 
 class Client implements ClientInterface
 {
@@ -25,7 +26,7 @@ class Client implements ClientInterface
         private bool $testMode,
         private ShippingGatewayRepositoryInterface $shippingGatewayRepository,
         private ZoneMatcherInterface $zoneMatcher,
-        private TranslatableFactory $shippingMethodFactory,
+        private FactoryInterface $shippingMethodFactory,
         private ShippingMethodRepository $shippingMethodRepository,
         private EntityManagerInterface $em,
         private TaxCategoryRepository $taxCategoryRepository,
